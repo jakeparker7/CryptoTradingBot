@@ -1,4 +1,6 @@
 # Parker CryptoTradingBot
+## Installation
+https://gekko.wizb.it/docs/installation/installing_gekko.html
 
 ## Important Files We Have Added
 
