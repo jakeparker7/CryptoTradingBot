@@ -1,5 +1,6 @@
-# CryptoTradingBot
+# Parker CryptoTradingBot
 
+## Important Files We Have Added
 
 
 ## Important Gekko Files
