@@ -1,5 +1,8 @@
 # Parker CryptoTradingBot
 ## Installation / Start UP
+### Start UI
+node gekko --ui
+
 ### Updated Installation
 https://gekko.wizb.it/docs/installation/installing_gekko.html <br/>
 In Summary <br/>
