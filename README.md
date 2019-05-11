@@ -2,9 +2,9 @@
 ## Our Current Strategy
 Should keep a Current and updated strategy here   
 Strategy should involve:   
-  *Coins and conversions to trade
-  *Strategies to use, try a few, perhaps put all into a NN
-  *Need to have a clear consensus on thresh-holds, that is backed by data
+  * Coins and conversions to trade
+  * Strategies to use, try a few, perhaps put all into a NN
+  * Need to have a clear consensus on thresh-holds, that is backed by data
 ## Installation / Start UP
 ### Start UI
 node gekko --ui
