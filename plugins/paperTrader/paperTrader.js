@@ -8,6 +8,8 @@ const calcConfig = config.paperTrader;
 const watchConfig = config.watch;
 const dirs = util.dirs();
 const log = require(dirs.core + 'log');
+const avgVolume = 400;      //This is the average NEO Volume per candle per minute
+
 
 const TrailingStop = require(dirs.broker + 'triggers/trailingStop');
 
@@ -42,6 +44,10 @@ const PaperTrader = function() {
   this.warmupCompleted = false;
 
   this.warmupCandle;
+
+  //Added properties to deal with volume issues
+  this.previousAdvice;
+  this.waitForVolume = false;
 }
 
 PaperTrader.prototype.relayPortfolioChange = function() {
@@ -115,6 +121,23 @@ PaperTrader.prototype.now = function() {
 }
 
 PaperTrader.prototype.processAdvice = function(advice) {
+  /*
+    The below to if statements have been added for volume calcs
+  */
+  //Do not process advice and clear previous advice as they cancel each other out
+  //This if cancels if a buy and sell orders are both coming in
+  if( this.waitForVolume && advice.recommendation != this.previousAdvice.recommendation ) {
+    this.waitForVolume = false;
+    this.previousAdvice = undefined;
+    return log.warn('[PaperTrader] Cancel trade as previous trade would negate each other');
+  }
+  //Delay trades until the candel has enough volume.
+  if ( this.candle.volume < avgVolume && !this.waitForVolume ) {
+    this.previousAdvice = advice;
+    this.waitForVolume = true;
+    return log.info('[PaperTrader] Not enough volume to process trade, will wait til next candle');
+  }
+
   let action;
   if(advice.recommendation === 'short') {
     action = 'sell';
@@ -275,6 +298,17 @@ PaperTrader.prototype.processCandle = function(candle, done) {
 
   if(this.activeStopTrigger) {
     this.activeStopTrigger.instance.updatePrice(this.price);
+  }
+
+  //This two if's have been added for volume calcs
+  if(this.waitForVolume) {
+    log.debug('Candle Volume =', candle.volume);
+  }
+
+  if(candle.volume > avgVolume && this.waitForVolume) {
+    this.processAdvice(this.previousAdvice);
+    this.waitForVolume = false;
+    this.previousAdvice = undefined;
   }
 
   done();
